@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | CivicPulse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a !important;
+            /* Dark background */
+            color: #f8fafc !important;
+            /* Light text */
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .top-nav-bar {
+            background: linear-gradient(90deg, #7c3aed, #6366f1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .top-nav-bar .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .dashboard-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+            margin-top: 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .dashboard-subtitle {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #6366f1;
+            margin: 0 0 1rem 0;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-value.total {
+            color: #6366f1;
+        }
+
+        .stat-value.pending {
+            color: #f59e0b;
+        }
+
+        .stat-value.processing {
+            color: #3b82f6;
+        }
+
+        .stat-value.completed {
+            color: #10b981;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #6366f1;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .problem-name {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .problem-name:hover {
+            text-decoration: underline;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-badge.pending {
+            background: #fef08a;
+            color: #ca8a04;
+        }
+
+        .status-badge.processing {
+            background: #bae6fd;
+            color: #0284c7;
+        }
+
+        .status-badge.completed {
+            background: #bbf7d0;
+            color: #16a34a;
+        }
+
+        /* Action Buttons */
+        .actions-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-view {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            width: fit-content;
+            transition: background 0.2s;
+        }
+
+        .btn-view:hover {
+            background: #4f46e5;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-status {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        /* These buttons in dark mode can be stylized nicely based on status */
+        .btn-status.pending {
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-status.pending:hover {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .btn-status.processing {
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-status.processing:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-status.completed {
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-status.completed:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #334155;
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .filter-input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            min-width: 150px;
+        }
+
+        .filter-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-filter {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-filter:hover {
+            background: #4f46e5;
+        }
+
+        .btn-clear {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding-bottom: 0.6rem;
+        }
+
+        .btn-clear:hover {
+            color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-nav-bar">
+        <div class="logo">CivicPulse - Admin Panel</div>
+        <div class="nav-links">
+            <span>Admin: Admin User</span>
+            <a href="/admin-logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">All Reported Problems</h1>
+            <p class="dashboard-subtitle">Manage and track all civic issues reported by users</p>
+        </div>
+
+        <% let total=problems.length; let pending=problems.filter(p=> p.status === 'pending').length;
+            let processing = problems.filter(p => p.status === 'processing').length;
+            let completed = problems.filter(p => p.status === 'completed').length;
+            %>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 class="stat-title">Total Problems</h3>
+                    <p class="stat-value total">
+                        <%= total %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Pending</h3>
+                    <p class="stat-value pending">
+                        <%= pending %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Processing</h3>
+                    <p class="stat-value processing">
+                        <%= processing %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Completed</h3>
+                    <p class="stat-value completed">
+                        <%= completed %>
+                    </p>
+                </div>
+            </div>
+
+            <form action="/admin-dashboard" method="GET" class="filter-bar">
+                <div class="filter-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" class="filter-input">
+                        <option value="all" <%=filters.status==='all' ? 'selected' : '' %>>All Status</option>
+                        <option value="pending" <%=filters.status==='pending' ? 'selected' : '' %>>Pending</option>
+                        <option value="processing" <%=filters.status==='processing' ? 'selected' : '' %>>Processing
+                        </option>
+                        <option value="completed" <%=filters.status==='completed' ? 'selected' : '' %>>Completed
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="date">Date</label>
+                    <input type="date" name="date" id="date" class="filter-input" value="<%= filters.date || '' %>">
+                </div>
+                <div class="filter-group">
+                    <label for="sortBy">Sort By</label>
+                    <select name="sortBy" id="sortBy" class="filter-input">
+                        <option value="createdAt" <%=filters.sortBy==='createdAt' ? 'selected' : '' %>>Date</option>
+                        <option value="status" <%=filters.sortBy==='status' ? 'selected' : '' %>>Status</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="order">Order</label>
+                    <select name="order" id="order" class="filter-input">
+                        <option value="desc" <%=filters.order==='desc' ? 'selected' : '' %>>Descending</option>
+                        <option value="asc" <%=filters.order==='asc' ? 'selected' : '' %>>Ascending</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-filter">Apply</button>
+                <a href="/admin-dashboard" class="btn-clear" style="padding-bottom: 0.6rem;">Clear</a>
+            </form>
+
+            <div class="table-container">
+                <% if (problems.length===0) { %>
+                    <div style="padding: 3rem; text-align: center; color: #94a3b8;">
+                        No problems have been reported yet.
+                    </div>
+                    <% } else { %>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Problem Name</th>
+                                    <th>Reported By</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% problems.forEach(problem=> { %>
+                                    <tr>
+                                        <td>
+                                            <a href="/admin/problem/<%= problem._id %>" class="problem-name">
+                                                <%= problem.name %>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <%= problem.postedBy ? problem.postedBy.username : 'Unknown' %>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge <%= problem.status %>">
+                                                <%= problem.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <%= problem.createdAt.toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <div class="actions-group">
+                                                <a href="/admin/problem/<%= problem._id %>" class="btn-view">View</a>
+                                                <div class="status-buttons">
+                                                    <form action="/update-status/<%= problem._id %>" method="POST"
+                                                        style="margin: 0;">
+                                                        <input type="hidden" name="status" value="pending">
+                                                        <button type="submit" class="btn-status pending">🕐
+                                                            Pending</button>
+                                                    </form>
+                                                    <form action="/update-status/<%= problem._id %>" method="POST"
+                                                        style="margin: 0;">
+                                                        <input type="hidden" name="status" value="processing">
+                                                        <button type="submit" class="btn-status processing">🔄
+                                                            Processing</button>
+                                                    </form>
+                                                    <form action="/update-status/<%= problem._id %>" method="POST"
+                                                        style="margin: 0;">
+                                                        <input type="hidden" name="status" value="completed">
+                                                        <button type="submit" class="btn-status completed">✅
+                                                            Completed</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        <% } %>
+            </div>
+    </div>
+</body>
+
+</html>

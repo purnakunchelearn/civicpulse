@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Problem | CivicPulse Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .top-nav-bar {
+            background: linear-gradient(90deg, #7c3aed, #6366f1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .top-nav-bar .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .nav-links span {
+            font-size: 0.95rem;
+        }
+
+        .dashboard-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-link {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-link:hover {
+            color: #4f46e5;
+        }
+
+        .problem-card {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .problem-image-container {
+            width: 100%;
+            height: 400px;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .problem-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .no-img-placeholder {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .problem-details {
+            padding: 2.5rem;
+        }
+
+        .problem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .problem-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background: rgba(234, 179, 8, 0.2);
+            color: #facc15;
+        }
+
+        .status-badge.processing {
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+        }
+
+        .status-badge.completed {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid #334155;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            color: #6366f1;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .meta-value {
+            color: #f8fafc;
+            font-weight: 500;
+        }
+
+        .description-section h3 {
+            color: #6366f1;
+            font-size: 1.25rem;
+            margin: 0 0 1rem 0;
+        }
+
+        .description-text {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+        }
+
+        .location-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 2rem;
+        }
+
+        .location-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #f8fafc;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .location-text {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .footer-date {
+            color: #64748b;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .admin-controls {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-controls select {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #334155;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .btn-update {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-update:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-nav-bar">
+        <div class="logo">CivicPulse - Admin Panel</div>
+        <div class="nav-links">
+            <span>Admin: Admin User</span>
+            <a href="/admin-logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <a href="/admin-dashboard" class="back-link">
+            &larr; Back to Dashboard
+        </a>
+
+        <div class="problem-card">
+            <div class="problem-image-container">
+                <% if (problem.imagePath) { %>
+                    <img src="<%= problem.imagePath %>" alt="Problem Image">
+                    <% } else { %>
+                        <div class="no-img-placeholder">No Image Available</div>
+                        <% } %>
+            </div>
+
+            <div class="problem-details">
+                <div class="problem-header">
+                    <h1 class="problem-title">
+                        <%= problem.name %>
+                    </h1>
+                    <span class="status-badge <%= problem.status %>">
+                        <%= problem.status %>
+                    </span>
+                </div>
+
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Posted By</span>
+                        <span class="meta-value">
+                            <%= problem.postedBy ? problem.postedBy.username : 'Unknown' %>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Posted On</span>
+                        <span class="meta-value">
+                            <%= problem.createdAt.toLocaleDateString() %>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Location</span>
+                        <span class="meta-value">
+                            <%= problem.location ? problem.location : 'Location not provided' %>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="description-section">
+                    <h3>Description</h3>
+                    <p class="description-text">
+                        <%= problem.description %>
+                    </p>
+                </div>
+
+                <div class="location-box">
+                    <div class="location-header">
+                        📍 Location Coordinates:
+                    </div>
+                    <p class="location-text">
+                        <%= problem.location %>
+                            <% if (problem.location && problem.location.includes(',')) { const
+                                parts=problem.location.split(','); if(parts.length>= 2 && !isNaN(parseFloat(parts[0]))
+                                && !isNaN(parseFloat(parts[1]))) { %>
+                                <br>Latitude: <%= parseFloat(parts[0]).toFixed(4) %>
+                                    <br>Longitude: <%= parseFloat(parts[1]).toFixed(4) %>
+                                        <% } } %>
+                    </p>
+                </div>
+
+                <div class="admin-controls">
+                    <form action="/update-status/<%= problem._id %>?redirect=view" method="POST"
+                        style="display: flex; gap: 1rem; align-items: center; width: 100%;">
+                        <label for="status" style="color: #94a3b8; font-weight: 600;">Update Status:</label>
+                        <select name="status" id="status">
+                            <option value="pending" <%=problem.status==='pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="processing" <%=problem.status==='processing' ? 'selected' : '' %>>Processing
+                            </option>
+                            <option value="completed" <%=problem.status==='completed' ? 'selected' : '' %>>Completed
+                            </option>
+                        </select>
+                        <button type="submit" class="btn-update">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Problem Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a !important;
+            /* var(--bg-color) */
+            color: #f8fafc !important;
+            /* var(--text-main) */
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .top-nav-bar {
+            background: linear-gradient(90deg, #7c3aed, #6366f1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .top-nav-bar .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .nav-links span {
+            font-size: 0.95rem;
+        }
+
+        .dashboard-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #6366f1;
+            margin: 0 0 1rem 0;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-value.total {
+            color: #6366f1;
+        }
+
+        .stat-value.pending {
+            color: #f59e0b;
+        }
+
+        .stat-value.processing {
+            color: #3b82f6;
+        }
+
+        .stat-value.completed {
+            color: #10b981;
+        }
+
+        .btn-post {
+            background: #6366f1;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-post:hover {
+            background: #4f46e5;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #6366f1;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .problem-name {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .problem-name:hover {
+            text-decoration: underline;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-badge.pending {
+            background: #fef08a;
+            color: #ca8a04;
+        }
+
+        .status-badge.processing {
+            background: #bae6fd;
+            color: #0284c7;
+        }
+
+        .status-badge.completed {
+            background: #bbf7d0;
+            color: #16a34a;
+        }
+
+        .btn-view {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .btn-view:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-nav-bar">
+        <div class="logo">CivicPulse</div>
+        <div class="nav-links">
+            <span>Welcome, <%= locals.user ? user.username : 'tester' %></span>
+            <a href="/post-problem" class="btn-post">Post Problem</a>
+            <a href="/user-logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <h1 class="dashboard-title">Your Reported Problems</h1>
+
+        <% let total=problems.length; let pending=problems.filter(p=> p.status === 'pending').length;
+            let processing = problems.filter(p => p.status === 'processing').length;
+            let completed = problems.filter(p => p.status === 'completed').length;
+            %>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 class="stat-title">Total Problems</h3>
+                    <p class="stat-value total">
+                        <%= total %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Pending</h3>
+                    <p class="stat-value pending">
+                        <%= pending %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Processing</h3>
+                    <p class="stat-value processing">
+                        <%= processing %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Completed</h3>
+                    <p class="stat-value completed">
+                        <%= completed %>
+                    </p>
+                </div>
+            </div>
+
+            <% if (locals.success) { %>
+                <div id="success-alert"
+                    style="background: #bbf7d0; color: #16a34a; border: 1px solid #86efac; padding: 1rem; border-radius: 6px; margin-bottom: 2rem; text-align: center; font-weight: 600;">
+                    Problem posted successfully!
+                </div>
+                <script>
+                    setTimeout(() => {
+                        const alert = document.getElementById('success-alert');
+                        if (alert) {
+                            alert.style.transition = 'opacity 0.5s ease';
+                            alert.style.opacity = '0';
+                            setTimeout(() => alert.remove(), 500);
+                        }
+                    }, 5000);
+                </script>
+                <% } %>
+
+                    <div class="table-container">
+                        <% if (problems.length===0) { %>
+                            <div style="padding: 3rem; text-align: center;">
+                                <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 1.5rem;">You haven't posted
+                                    any problems yet</p>
+                                <a href="/post-problem" class="btn-post">Post Your First Problem</a>
+                            </div>
+                            <% } else { %>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Problem Name</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% problems.forEach(problem=> { %>
+                                            <tr>
+                                                <td>
+                                                    <a href="/problem/<%= problem._id %>" class="problem-name">
+                                                        <%= problem.name %>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <span class="status-badge <%= problem.status %>">
+                                                        <%= problem.status %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <%= problem.createdAt.toLocaleDateString() %>
+                                                </td>
+                                                <td>
+                                                    <a href="/problem/<%= problem._id %>" class="btn-view">View
+                                                        Detail</a>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                                <% } %>
+                    </div>
+    </div>
+</body>
+
+</html>
